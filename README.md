@@ -41,18 +41,19 @@ qiuqiu-content-engine/
 - **自动打标**：`extract_articles.py` 用 **LLM 语义分类**（Deepseek，读标题+正文判断每篇的 pillar / content_type），失败时回退 taxonomy 别名的子串匹配——不改原文件，读取时推导。
 - **阅读依据**：`doc/content-model.md` 定义了内容模型与字段口径。
 
-## 内容智能层（工作台）
+## 页面构成
 
-`site/build_intel.mjs` 把全库转成「下一步该写什么」，生成三张工作台页面，并给首页供「今日值得写」：
+站点由一个 `site/build.mjs` 生成（单一构建，共享 `site/theme.mjs` 模板），页面：
 
-| 页面 | 是什么 |
+| 页面 | 内容 |
 |---|---|
-| `map.html` 内容地图 | 主题分布、交叉关系、代表文章 |
-| `opportunity.html` 选题机会 | **选题引擎 V2（6 类机会）** |
-| `potential.html` 改写潜力 | 每篇的 小红书 / 视频 / 公众号 改写潜力分 |
-| `index.html` Creator OS 首页 | hero + 两条路 + 📌今日值得写 Top3（读 `intel.json` 实时选题） |
-
-选题引擎 V2 的 6 类机会：建议深耕 / 交叉空白 / 新兴上升 / 沉寂回温 / 类型缺口 / 时间重写。时间基准用 `new Date()` 动态算，每月自动滚动不维护。
+| `index.html` 首页 | hero + 统计 + 门户卡 + 搜索 + 最新文章 |
+| `archive.html` 全部文章 | 全量卡片存档 |
+| `topics.html` 按主题 | 6 大主题分栏浏览 |
+| `map.html` 内容地图 | 各主题分布 / 交叉关系 / 代表文章 |
+| `about.html` 认识秋秋 | 轨迹 / 6 大研究主题 / 年度柱状 / 代表文章 / 标签云 |
+| `search.html` + `search.js` | 前端全文过滤（读 `search.json`） |
+| `post/*` | 每篇全文页 |
 
 ## 抓取链路（两种场景）
 

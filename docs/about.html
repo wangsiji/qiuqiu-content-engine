@@ -1,109 +1,170 @@
-<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>认识秋秋 · 秋秋很开心</title><meta property="og:site_name" content="秋秋很开心"><meta property="og:type" content="website"><meta property="og:image" content="https://wangsiji.github.io/qiuqiu-content-engine/og-card.svg"><meta name="twitter:card" content="summary"><meta name="description" content="秋秋的个人主页：一个普通人的自由生活实验"><style>/* 吉卜力水彩主题 — 全站共享 */
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>认识秋秋 · 秋秋很开心</title><meta name="description" content="秋秋的个人主页：一个普通人的自由生活实验"><meta property="og:title" content="认识秋秋 · 秋秋很开心"><meta property="og:description" content="秋秋的个人主页：一个普通人的自由生活实验"><meta property="og:type" content="website"><meta property="og:site_name" content="秋秋很开心"><meta property="og:image" content="https://wangsiji.github.io/qiuqiu-content-engine/og-card.svg"><meta name="twitter:card" content="summary"><style>
 :root{
-  --sky:#e9f2ec; --cream:#fdf9f0; --paper:#fffdf6;
-  --green:#5b7f63; --green-deep:#4c6f52; --blue:#6f9bb5;
-  --yellow:#f2d98a; --terracotta:#cf855f; --brown:#8a6f52; --ink:#3b3a34; --line:#e4dbc4;
-  --shadow:0 8px 24px rgba(80,90,60,.12);
+  --bg:#ffffff;            /* 底色 */
+  --bg-soft:#f7f8f6;       /* 次级背景（导航/卡片悬停） */
+  --ink:#1a1d21;           /* 主文字 */
+  --ink-2:#5c6470;         /* 次级文字 */
+  --ink-3:#929aa6;         /* 弱化文字 */
+  --line:#e6e8eb;          /* 分隔线 */
+  --accent:#7c5cff;        /* 单一强调色（紫调，苹果系） */
+  --accent-soft:#f0edff;   /* 强调色淡底 */
+  --warm:#a8742c;          /* 辅助暖金（年份/徽标） */
+  --shadow:0 1px 2px rgba(20,24,30,.05),0 4px 16px rgba(20,24,30,.06);
 }
 *{box-sizing:border-box}
-body{margin:0;font-family:'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;color:var(--ink);
-  line-height:1.75;background:linear-gradient(180deg,#e9f2ec 0%,#f6f8e8 45%,#fdf9f0 75%);min-height:100vh;}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;font-family:'PingFang SC','Hiragino Sans GB','Microsoft YaHei',-apple-system,sans-serif;
+  color:var(--ink);background:var(--bg);line-height:1.7;-webkit-font-smoothing:antialiased}
 a{color:inherit;text-decoration:none}
-.wrap{max-width:1060px;margin:0 auto;padding:0 24px;position:relative;z-index:2}
+.wrap{max-width:960px;margin:0 auto;padding:0 22px;position:relative;z-index:1}
 
-/* 天空与山丘装饰 */
-.sky{position:relative;height:96px;overflow:hidden;pointer-events:none;background:linear-gradient(180deg,#dff0f7 0%,#eef7ea 100%);}
-.cloud{position:absolute;background:#fff;border-radius:999px;filter:blur(1px)}
-.cloud:before,.cloud:after{content:'';position:absolute;background:#fff;border-radius:50%}
-.cloud.c1{width:120px;height:34px;left:7%;top:22px;animation:drift 30s linear infinite}
-.cloud.c1:before{width:46px;height:46px;left:20px;top:-24px}
-.cloud.c1:after{width:38px;height:38px;right:18px;top:-16px}
-.cloud.c2{width:78px;height:26px;right:14%;top:38px;animation:drift 40s linear infinite reverse;opacity:.75}
-.cloud.c2:before{width:32px;height:32px;left:14px;top:-18px}
-.cloud.c2:after{width:26px;height:26px;right:12px;top:-12px}
-.sun{position:absolute;right:12%;top:10px;width:46px;height:46px;border-radius:50%;
-  background:radial-gradient(circle at 35% 35%,#fff6c9,#f6cf6b);box-shadow:0 0 28px rgba(246,207,107,.6)}
-.hill{position:relative;height:46px;background:
-  radial-gradient(60% 120% at 12% 100%,#9cbf93 0 68%,transparent 69%),
-  radial-gradient(45% 115% at 40% 100%,#b3cf9f 0 66%,transparent 67%),
-  radial-gradient(55% 130% at 70% 100%,#8fba8b 0 65%,transparent 66%),
-  radial-gradient(40% 90% at 92% 100%,#a8c99b 0 62%,transparent 63%)}
-@keyframes drift{from{transform:translateX(-30px)}to{transform:translateX(90px)}}
 
-header{position:sticky;top:0;z-index:20;background:rgba(255,253,246,.88);backdrop-filter:blur(10px);border-bottom:1.5px solid var(--line)}
-header .wrap{display:flex;justify-content:space-between;align-items:center;padding:10px 24px}
-.site-logo{font-weight:800;color:var(--green-deep);font-size:17px;letter-spacing:.5px}
-nav a{margin-left:16px;color:var(--ink);font-size:14px;font-weight:500}
-nav a:hover{color:var(--green-deep)}
-nav a.nav-hl{color:var(--terracotta);font-weight:800;border-bottom:2px solid var(--terracotta);padding-bottom:2px}
+header{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.85);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--line)}
+header .wrap{display:flex;justify-content:space-between;align-items:center;height:56px;padding:0 22px}
+.site-logo{font-weight:800;font-size:16px;letter-spacing:-.01em;color:var(--ink)}
+nav{display:flex;align-items:center;gap:2px}
+nav a{padding:6px 12px;font-size:14px;font-weight:500;color:var(--ink-2);border-radius:8px;transition:background .15s,color .15s}
+nav a:hover{background:var(--bg-soft);color:var(--ink)}
+nav a.nav-hl{color:var(--accent);font-weight:700;background:var(--accent-soft)}
 
-.hero{padding:42px 0 28px;text-align:center}
-.hero h1{font-size:40px;margin:0 0 10px;color:var(--green-deep);letter-spacing:1px}
-.tagline{color:var(--ink);font-size:16px;opacity:.85}
-.stats{margin-top:20px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
-.stats span{background:var(--paper);border:1.5px solid var(--line);border-radius:999px;padding:6px 16px;font-size:14px;color:var(--green-deep);font-weight:600}
-.hero-actions{display:flex;gap:14px;justify-content:center;margin-top:26px;flex-wrap:wrap}
-.btn{background:var(--green-deep);color:#fff;border-radius:999px;padding:11px 26px;font-size:15px;font-weight:700;display:inline-block;box-shadow:0 5px 14px rgba(76,111,82,.35);transition:.2s}
-.btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(76,111,82,.45)}
-.btn.outline{background:transparent;border:2px solid var(--green-deep);color:var(--green-deep);box-shadow:none}
-.btn.outline:hover{background:rgba(91,127,99,.08)}
 
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:22px;padding:10px 0 64px}
-.card{background:var(--paper);border:1.5px solid var(--line);border-radius:20px 12px 20px 12px;padding:20px 22px;display:block;position:relative;overflow:hidden;transition:.18s;box-shadow:0 4px 12px rgba(90,100,70,.08)}
-.card:before{content:'';position:absolute;top:0;left:0;right:0;height:5px;background:linear-gradient(90deg,var(--terracotta),var(--yellow),var(--green),#6f8ba5);opacity:.8}
-.card:hover{transform:translateY(-5px) rotate(-.4deg);box-shadow:0 14px 32px rgba(90,100,70,.16)}
-.card-meta{display:flex;justify-content:space-between;font-size:12.5px;color:var(--brown,#8b7f6b);margin-bottom:9px}
-.card h3{font-size:16.5px;margin:0 0 8px;line-height:1.5}
-.card p{font-size:13.5px;color:#6f6758;margin:0 0 12px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.card .tags span{background:#f3efe2;border-radius:8px;padding:2px 9px;font-size:11.5px;color:var(--brown);margin-right:6px;font-weight:600}
-.year-head{font-size:21px;color:var(--green-deep);margin:38px 0 18px;font-weight:800}
-.year-head:before{content:'☘';color:var(--terracotta);margin-right:8px}
-h2.yhead{font-size:20px;color:var(--green-deep);margin:34px 0 14px;border-bottom:2px solid var(--line);padding-bottom:8px}
+.hero{padding:64px 0 40px;text-align:center}
+.hero h1{font-size:42px;margin:0 0 14px;font-weight:800;letter-spacing:-.02em;line-height:1.15}
+.hero .tagline{color:var(--ink-2);font-size:17px;max-width:560px;margin:0 auto}
+.stats{margin-top:24px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.stats span{background:var(--bg-soft);border:1px solid var(--line);border-radius:999px;padding:5px 14px;font-size:13px;color:var(--ink-2);font-weight:500}
+.hero-actions{display:flex;gap:12px;justify-content:center;margin-top:30px;flex-wrap:wrap}
+.btn{background:var(--ink);color:#fff;border-radius:8px;padding:10px 22px;font-size:14px;font-weight:600;transition:.15s}
+.btn:hover{opacity:.85}
+.btn.outline{background:transparent;border:1px solid var(--line);color:var(--ink)}
+.btn.outline:hover{border-color:var(--ink)}
 
-.post-title{font-size:30px;color:var(--green-deep);margin:18px 0 4px;line-height:1.4}
-.post-meta{color:#8b7f6b;font-size:14px;margin:6px 0 12px}
-.post-desc{color:#6f6758;font-size:15px;background:rgba(255,253,246,.7);border-left:4px solid var(--yellow);padding:8px 14px;border-radius:0 12px 12px 0}
-.post-body{background:var(--paper);border:1.5px solid var(--line);border-radius:20px;padding:28px;margin:20px 0;box-shadow:var(--shadow)}
-.post-body p{margin:0 0 16px;font-size:15.5px;line-height:1.9}
-.post-body img{max-width:100%;border-radius:14px;margin:10px 0;box-shadow:0 6px 18px rgba(90,100,70,.15)}
-.post-body blockquote{border-left:4px solid var(--terracotta);margin:0 0 16px;padding:14px 18px;color:#6f6758;background:#fbf5ea;border-radius:0 12px 12px 0}
-.post-body h3,.post-body h4{color:var(--green-deep);margin:22px 0 10px}
-.back{color:var(--green-deep);font-size:14px}
-.post-nav{display:flex;justify-content:space-between;gap:16px;margin:26px 0}
-.post-nav a{color:var(--green-deep);font-weight:600}
-.post-footer{margin:22px 0 60px}
-.post-footer a{background:var(--terracotta);color:#fff;border-radius:999px;padding:11px 30px;font-weight:700;display:inline-block}
 
-.dash,.topic{background:var(--paper);border:1.5px solid var(--line);border-radius:18px 12px}
-.bar{background:#efe7d6;border-radius:999px;overflow:hidden}
-.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--terracotta),var(--yellow))}
-.gap{border-radius:12px;padding:8px 12px;font-size:13px;margin:10px 0 0}
-.gap.warn{background:#fdf3e0;border:1px solid #eed9a8;color:#8a6f3b}
-.gap.ok{background:#eff5e9;border:1px solid #d2e3c5;color:#5d7a4f}
-.hint{background:#fbf6ea;border:1px solid #efe0ba;border-radius:14px;padding:12px 18px;font-size:13px;color:#7a733b;margin-top:12px}
+.searchbar{display:flex;justify-content:center;gap:10px;margin:26px 0 8px}
+.searchbar input{width:min(520px,100%);padding:11px 18px;border:1.5px solid var(--line);border-radius:10px;
+  font-size:15px;background:#fff;outline:none;transition:border-color .15s,box-shadow .15s}
+.searchbar input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.searchbar button{background:var(--accent);color:#fff;border:none;border-radius:10px;padding:0 22px;font-size:14px;font-weight:600;cursor:pointer}
+.search-hint{font-size:13px;color:var(--ink-3);text-align:center;margin:12px 0 0}
 
-.searchbar{display:flex;justify-content:center;gap:10px;margin:28px 0 6px}
-.searchbar input{width:min(480px,100%);padding:12px 22px;border:1.5px solid #ddd0a8;border-radius:999px;font-size:15px;background:#fffdf9;outline:none}
-.searchbar input:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(91,127,99,.16)}
-.searchbar button{background:var(--green-deep);color:#fff;border:none;border-radius:999px;padding:0 26px;font-size:15px;font-weight:700;cursor:pointer}
-footer{text-align:center;color:var(--brown);font-size:13px;padding:34px 0 44px;background:linear-gradient(180deg,transparent,#e6f0dc)}
-footer .foot-nav{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;margin-bottom:12px}
-footer .foot-nav a{color:var(--green-deep);font-weight:600;font-size:13.5px;border-bottom:1px dashed transparent;padding-bottom:2px}
-footer .foot-nav a:hover{border-bottom-color:var(--green-deep)}
-footer .foot-line{opacity:.9}
-@media(max-width:640px){.hero h1{font-size:28px}.grid{grid-template-columns:1fr}nav a{margin-left:10px;font-size:13px}}
 
-.ab-hero{padding:44px 0 30px}.ab-hero .eyebrow{font-size:12px;color:var(--terracotta);font-weight:700;letter-spacing:.1em;display:flex;align-items:center;gap:8px}.ab-hero .eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--terracotta)}
-.ab-hero h1{font-size:38px;color:var(--green-deep);margin:10px 0 8px;letter-spacing:.5px}.ab-hero .sub{font-size:16px;color:var(--ink);opacity:.85;margin-bottom:12px}
-.ab-hero .quote{font-size:15px;color:var(--brown);font-style:italic;margin:10px 0 18px;padding-left:14px;border-left:3px solid var(--yellow)}
-.ab-hero .btn{display:inline-block;margin-top:6px}
-.ab-sec,.sec{padding:24px 0 8px}.sec h2{font-size:23px;color:var(--green-deep);margin:26px 0 14px;border-left:4px solid var(--terracotta);padding-left:12px}
-.story-line{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;font-size:14px;color:var(--ink);background:var(--paper);border:1.5px solid var(--line);border-radius:16px;padding:16px 20px;margin:14px 0}.story-line i{width:6px;height:6px;border-radius:50%;background:var(--terracotta);display:inline-block}
-.accs{display:flex;gap:12px;flex-wrap:wrap}.acc{background:var(--paper);border:1.5px solid var(--line);border-radius:14px;padding:10px 16px;display:flex;flex-direction:column;gap:2px;flex:1;min-width:150px}.acc b{color:var(--green-deep);font-size:15px}.acc span{color:var(--brown);font-size:12.5px}
-.topics{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;margin:14px 0}.topics .it{background:var(--paper);border:1.5px solid var(--line);border-radius:16px;padding:14px 16px;display:flex;gap:12px;align-items:flex-start;transition:.15s}.topics .it:hover{border-color:var(--green);transform:translateY(-2px)}.topics .dot{width:10px;height:10px;border-radius:50%;flex:none;margin-top:5px}.topics .name{font-weight:800;color:var(--ink);font-size:14.5px;margin-bottom:2px}.topics .why{color:var(--brown);font-size:12.5px;line-height:1.55}
-.chart{display:flex;align-items:flex-end;gap:8px;background:var(--paper);border:1.5px solid var(--line);border-radius:16px;padding:18px 20px;height:190px;margin:14px 0}.chart .c{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:4px}.chart .cv{font-size:10px;font-weight:700;color:var(--brown)}.chart .bar{width:72%;border-radius:6px 6px 2px 2px;background:linear-gradient(180deg,var(--yellow),var(--terracotta))}.chart .cy{font-size:10px;color:var(--brown);font-weight:600}
-.tls{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}.tl{flex:1;min-width:190px;background:var(--paper);border:1.5px solid var(--line);border-radius:14px;padding:12px 15px}.tl .ty{font-size:11px;font-weight:800;color:var(--terracotta);letter-spacing:.04em}.tl .tt{font-size:14px;font-weight:800;color:var(--green-deep);margin:2px 0}.tl .td{font-size:12px;color:var(--brown);line-height:1.5}
-.reads{display:flex;flex-direction:column;gap:8px}.read{display:flex;align-items:center;gap:12px;background:var(--paper);border:1.5px solid var(--line);border-radius:14px;padding:12px 16px;transition:.15s}.read:hover{border-color:var(--green);transform:translateX(3px)}.read .no{font-size:13px;font-weight:800;color:var(--terracotta);width:26px}.read .tag{font-size:10.5px;background:#f3efe2;color:var(--brown);border-radius:8px;padding:2px 8px;flex:none}.read .t{font-size:14px;font-weight:700;color:var(--ink);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.read .w{font-size:12px;color:var(--brown);flex:none;max-width:38%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.cloud{display:flex;flex-wrap:wrap;gap:8px 10px;background:var(--paper);border:1.5px solid var(--line);border-radius:16px;padding:18px 20px;margin:14px 0}.cloud .word{color:var(--green-deep);font-weight:700;line-height:1.2;transition:.15s}.cloud .word:hover{color:var(--terracotta);transform:translateY(-2px)}.hint2{font-size:12px;color:var(--brown);margin-top:10px}
-@media(max-width:640px){.ab-hero h1{font-size:28px}.read .w{display:none}.topics{grid-template-columns:1fr}}
-</style></head><body><div class="sky"><span class="cloud c1"></span><span class="cloud c2"></span><span class="sun"></span></div><div class="hill"></div><header><div class="wrap"><a class="site-logo" href="index.html">秋秋很开心</a><nav><a href="index.html">首页</a><a href="topics.html">主题</a><a href="map.html">内容地图</a><a href="archive.html">全部文章</a><a href="search.html">搜索</a><a class="nav-hl" href="about.html">我是谁</a></nav></div></header><main class="wrap"><div class="ab-hero"><div class="eyebrow"><span class="dot"></span>认识秋秋 · QIUQIU</div><h1>一个普通人的自由生活实验</h1><p class="sub">96年 · 24岁裸辞 · 26岁退休 · 带娃旅居中国</p><p class="quote">「我好像无法给出建议，我先给出经历。」</p><a class="btn" href="#story">从我的故事开始 ↓</a></div><section id="story" class="ab-sec"><h2>我的轨迹</h2><div class="story-line">2018开始写作 <i></i> 北漂编导 <i></i> 24岁裸辞 <i></i> 26岁退休 <i></i> 30岁旅居中国</div><div class="accs"><div class="acc"><b>秋秋在分享</b><span>232 篇</span></div><div class="acc"><b>秋秋很开心</b><span>272 篇</span></div></div></section><section class="sec"><h2>我在长期研究这 6 件事</h2><div class="topics"><div class="it"><span class="dot" style="background:var(--amber)"></span><div><div class="name">财务自由</div><div class="why">不是为了躺平，而是为了拥有选择生活的自由</div></div></div><div class="it"><span class="dot" style="background:var(--moss)"></span><div><div class="name">生活方式</div><div class="why">普通家庭怎么过得舒服又体面，是我一直在试的事</div></div></div><div class="it"><span class="dot" style="background:var(--plum)"></span><div><div class="name">自我成长</div><div class="why">把心理学用在解剖自己，记录真实的改变</div></div></div><div class="it"><span class="dot" style="background:var(--indigo)"></span><div><div class="name">AI 与工具</div><div class="why">普通人的 AI 用法：让工具省时间，而不是炫技</div></div></div><div class="it"><span class="dot" style="background:var(--olive)"></span><div><div class="name">读书</div><div class="why">读过的书，变成用得上的思考和方法</div></div></div><div class="it"><span class="dot" style="background:var(--sand)"></span><div><div class="name">好物分享</div><div class="why">认真用过、认真测评，才敢分享</div></div></div></div></section><section class="sec"><h2>我一路写了什么</h2><div class="chart"><div class="c"><div class="cv">6</div><div class="bar" style="height:6px" title="6 篇"></div><div class="cy">2018</div></div><div class="c"><div class="cv">14</div><div class="bar" style="height:14px" title="14 篇"></div><div class="cy">2019</div></div><div class="c"><div class="cv">67</div><div class="bar" style="height:68px" title="67 篇"></div><div class="cy">2020</div></div><div class="c"><div class="cv">80</div><div class="bar" style="height:81px" title="80 篇"></div><div class="cy">2021</div></div><div class="c"><div class="cv">66</div><div class="bar" style="height:67px" title="66 篇"></div><div class="cy">2022</div></div><div class="c"><div class="cv">48</div><div class="bar" style="height:48px" title="48 篇"></div><div class="cy">2023</div></div><div class="c"><div class="cv">57</div><div class="bar" style="height:57px" title="57 篇"></div><div class="cy">2024</div></div><div class="c"><div class="cv">119</div><div class="bar" style="height:120px" title="119 篇"></div><div class="cy">2025</div></div><div class="c"><div class="cv">47</div><div class="bar" style="height:47px" title="47 篇"></div><div class="cy">2026</div></div></div><div class="tls"><div class="tl"><div class="ty">2018-2021</div><div class="tt">效率工具期</div><div class="td">写App、笔记、工具测评，用内容记录普通人的成长。</div></div><div class="tl"><div class="ty">2022</div><div class="tt">退休元年</div><div class="td">26岁带着250万宣布退休。第一次把「财务自由≠财富自由」讲清楚。</div></div><div class="tl"><div class="ty">2023</div><div class="tt">FIRE体系化</div><div class="td">财富篇/心态篇/未来篇，提出「有钱/好心态/对能力自信」。</div></div><div class="tl"><div class="ty">2024-2025</div><div class="tt">全家FIRE</div><div class="td">生娃、家庭账本，发现一家人的自由比一个人难得多。</div></div><div class="tl"><div class="ty">2025.04-至今</div><div class="tt">旅居中国</div><div class="td">结束7年北漂：威海→海南→大理，骑行800km。</div></div></div></section><section class="sec"><h2>第一次认识我，从这 5 篇开始</h2><div class="reads"><a class="read" href="https://mp.weixin.qq.com/s/se7lRTlnpzbPMXOqDGWP1g" target="_blank" rel="noopener"><span class="no">01</span><span class="tag">认识我</span><span class="t">26岁，我打算正式退休了！</span><span class="w">整个内容宇宙的原点：普通人也能谈自由</span></a><a class="read" href="https://mp.weixin.qq.com/s/Eevz9jGj-JLerisrbKZ39A" target="_blank" rel="noopener"><span class="no">02</span><span class="tag">我的选择</span><span class="t">小城市45-60万真的足够Fire(退休）耶！</span><span class="w">用真实询价算给你看：便宜不等于将就</span></a><a class="read" href="https://mp.weixin.qq.com/s/xtRGUi5GyMguFRsWXsE-_w" target="_blank" rel="noopener"><span class="no">03</span><span class="tag">我的状态</span><span class="t">退休3个月，收入10万块。</span><span class="w">摊开现金流：存单利息+广告+分成</span></a><a class="read" href="https://mp.weixin.qq.com/s/zAhsojID9ud2Z9LE1fvrzA" target="_blank" rel="noopener"><span class="no">04</span><span class="tag">我的方法</span><span class="t">不上班三年，我是如何省钱/花钱的？</span><span class="w">独创时间自由=错峰套利</span></a><a class="read" href="https://mp.weixin.qq.com/s/ZpNhg8lFPtGwNy9YUW6EfQ" target="_blank" rel="noopener"><span class="no">05</span><span class="tag">我现在在做什么</span><span class="t">退休3年，我的资产翻倍了</span><span class="w">300→600，金钱/身体/能力三重奏</span></a></div></section><section class="sec"><h2>我反复谈论的词</h2><div class="cloud"><a class="word" style="font-size:28px" href="search.html?q=%E7%94%9F%E6%B4%BB%E6%96%B9%E5%BC%8F" title="400 篇">生活方式</a><a class="word" style="font-size:26px" href="search.html?q=%E8%87%AA%E6%88%91%E6%88%90%E9%95%BF" title="339 篇">自我成长</a><a class="word" style="font-size:25px" href="search.html?q=AI" title="331 篇">AI</a><a class="word" style="font-size:24px" href="search.html?q=%E6%8F%90%E5%89%8D%E9%80%80%E4%BC%91" title="294 篇">提前退休</a><a class="word" style="font-size:21px" href="search.html?q=%E8%AF%BB%E4%B9%A6" title="224 篇">读书</a><a class="word" style="font-size:20px" href="search.html?q=%E5%A5%BD%E7%89%A9" title="210 篇">好物</a><a class="word" style="font-size:19px" href="search.html?q=%E7%90%86%E8%B4%A2" title="185 篇">理财</a><a class="word" style="font-size:19px" href="search.html?q=%E6%90%9E%E9%92%B1" title="183 篇">搞钱</a><a class="word" style="font-size:19px" href="search.html?q=%E6%97%85%E8%A1%8C" title="180 篇">旅行</a><a class="word" style="font-size:18px" href="search.html?q=%E5%AD%98%E9%92%B1" title="158 篇">存钱</a><a class="word" style="font-size:18px" href="search.html?q=%E4%B9%A6%E5%8D%95%E6%8E%A8%E8%8D%90" title="141 篇">书单推荐</a><a class="word" style="font-size:17px" href="search.html?q=%E6%97%85%E8%A1%8C%E6%94%BB%E7%95%A5" title="133 篇">旅行攻略</a><a class="word" style="font-size:16px" href="search.html?q=%E6%83%85%E6%84%9F" title="111 篇">情感</a><a class="word" style="font-size:15px" href="search.html?q=%E5%A5%BD%E7%89%A9%E6%8E%A8%E8%8D%90" title="80 篇">好物推荐</a><a class="word" style="font-size:15px" href="search.html?q=%E6%96%B9%E6%B3%95%E6%95%99%E7%A8%8B" title="64 篇">方法教程</a><a class="word" style="font-size:14px" href="search.html?q=%E7%BB%8F%E9%AA%8C%E5%88%86%E4%BA%AB" title="49 篇">经验分享</a><a class="word" style="font-size:13px" href="search.html?q=%E7%90%86%E8%B4%A2%E5%88%86%E6%9E%90" title="27 篇">理财分析</a><a class="word" style="font-size:13px" href="search.html?q=%E4%B8%AA%E4%BA%BA%E5%A4%8D%E7%9B%98" title="13 篇">个人复盘</a><a class="word" style="font-size:12px" href="search.html?q=%E4%B8%AA%E4%BA%BA%E5%88%86%E4%BA%AB" title="4 篇">个人分享</a></div><p class="hint2">点击任意词 → 去搜相关文章</p></section></main><footer><div class="foot-nav"><a href="about.html">认识秋秋</a><a href="map.html">内容地图</a><a href="archive.html">全部文章</a><a href="opportunity.html">我会继续写什么</a><a href="rss.xml">RSS 订阅</a></div><div class="foot-line">© 2026 秋秋很开心 · 秋秋在分享 · 全部内容为秋秋原创</div></footer></body></html>
+.yhead{font-size:15px;font-weight:700;color:var(--ink);margin:38px 0 14px;padding-bottom:8px;border-bottom:1px solid var(--line);letter-spacing:-.01em}
+
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;padding:6px 0 48px}
+.card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:16px 18px;display:block;position:relative;
+  transition:.15s;box-shadow:none}
+.card:hover{border-color:#cfd3da;box-shadow:var(--shadow);transform:translateY(-1px)}
+.card-meta{display:flex;justify-content:space-between;font-size:12px;color:var(--ink-3);margin-bottom:8px}
+.card h3{font-size:15.5px;margin:0 0 8px;line-height:1.45;font-weight:600;letter-spacing:-.01em}
+.card p{font-size:13px;color:var(--ink-2);margin:0 0 12px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.card .tags span{background:var(--bg-soft);border-radius:5px;padding:2px 8px;font-size:11.5px;color:var(--ink-2);margin-right:6px;font-weight:500}
+.more-link{margin:0 0 8px;font-size:13.5px}
+.more-link a{color:var(--accent);font-weight:600}
+
+
+.post-title{font-size:32px;color:var(--ink);margin:22px 0 6px;font-weight:800;line-height:1.3;letter-spacing:-.02em}
+.post-meta{color:var(--ink-3);font-size:13px;margin:4px 0 18px}
+.post-desc{color:var(--ink-2);font-size:15px;background:var(--bg-soft);border-left:3px solid var(--accent);padding:10px 16px;border-radius:0 8px 8px 0;margin:16px 0}
+.post-body{background:#fff;border:1px solid var(--line);border-radius:12px;padding:30px 34px;margin:22px 0;line-height:1.9}
+.post-body p{margin:0 0 18px;font-size:15.5px;color:var(--ink)}
+.post-body img{max-width:100%;border-radius:8px;margin:12px 0}
+.post-body blockquote{border-left:3px solid var(--accent);margin:0 0 18px;padding:10px 18px;color:var(--ink-2);background:var(--bg-soft);border-radius:0 8px 8px 0}
+.post-body h3,.post-body h4{color:var(--ink);margin:26px 0 10px;letter-spacing:-.01em}
+.back{color:var(--accent);font-size:13.5px;font-weight:500}
+.post-nav{display:flex;justify-content:space-between;gap:16px;margin:22px 0;font-size:13.5px}
+.post-nav a{color:var(--accent);font-weight:600}
+.post-nav .right{text-align:right}
+.post-footer{margin:22px 0 56px}
+.post-footer a{background:var(--ink);color:#fff;border-radius:8px;padding:10px 24px;font-weight:600;display:inline-block;font-size:14px}
+
+
+.dash{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;padding:6px 0 20px}
+.tp{background:#fff;border:1px solid var(--line);border-radius:10px;padding:16px 18px}
+.tp h3{font-size:15px;font-weight:700;margin:0 0 6px;letter-spacing:-.01em}
+.tp .why{font-size:12.5px;color:var(--ink-2);margin-bottom:8px;line-height:1.5}
+.tp .cnt{font-size:12px;color:var(--ink-3);margin-bottom:8px}
+.tp .meta{font-size:11.5px;color:var(--ink-3);margin-top:8px}
+.tp details{margin-top:8px;font-size:12.5px;color:var(--ink-2)}
+.tp details summary{cursor:pointer;color:var(--accent);font-weight:600}
+.tp .tl{font-size:12.5px;color:var(--ink-2);padding:2px 0}
+.bar{background:var(--bg-soft);border-radius:999px;overflow:hidden;height:6px}
+.bar i{display:block;height:100%;background:var(--accent);border-radius:999px}
+.map-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px;padding:6px 0 20px}
+
+
+.legend{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;margin:18px 0;font-size:12.5px;color:var(--ink-2)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:10px;height:10px;border-radius:50%;display:inline-block}
+ol.opp{list-style:none;margin:0;padding:0 0 36px;display:flex;flex-direction:column;gap:12px}
+ol.opp li{background:#fff;border:1px solid var(--line);border-radius:10px;padding:16px 18px}
+ol.opp .badge{font-size:11.5px;font-weight:700;color:var(--accent);background:var(--accent-soft);border-radius:5px;padding:2px 8px;margin-right:8px}
+ol.opp h4{font-size:15px;margin:8px 0 4px;letter-spacing:-.01em}
+ol.opp p{font-size:13px;color:var(--ink-2);margin:0;line-height:1.6}
+.rel{display:block;margin-top:8px;font-size:12.5px;color:var(--accent);font-weight:600}
+
+
+.cloud{background:#fff;border:1px solid var(--line);border-radius:12px;padding:20px 22px;margin:14px 0;display:flex;flex-wrap:wrap;gap:10px;align-items:baseline}
+.cloud .word{color:var(--ink);font-weight:600;line-height:1.3;transition:.15s}
+.cloud .word:hover{color:var(--accent)}
+
+
+.tls{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+.tl,.acc{flex:1;min-width:180px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px 15px}
+.tl .ty{font-size:11px;font-weight:800;color:var(--warm);letter-spacing:.04em}
+.tl .tt{font-size:14px;font-weight:700;margin:2px 0}
+.tl .td{font-size:12px;color:var(--ink-2);line-height:1.5}
+.acc b{font-size:14px}.acc span{color:var(--ink-3);font-size:12px}
+.chart{display:flex;align-items:flex-end;gap:8px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:18px 20px;height:180px;margin:14px 0}
+.chart .c{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:4px}
+.chart .cv{font-size:10px;font-weight:700;color:var(--ink-3)}
+.chart .bar{width:66%;max-height:110px;min-height:2px;border-radius:4px 4px 1px 1px;background:var(--accent)}
+.chart .cy{font-size:10px;color:var(--ink-3);font-weight:600}
+.reads{display:flex;flex-direction:column;gap:8px}
+.read{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px 16px;transition:.15s}
+.read:hover{border-color:var(--ink);transform:translateX(3px)}
+.read .no{font-size:12px;font-weight:800;color:var(--accent);width:24px}
+.read .tag{font-size:10.5px;background:var(--bg-soft);color:var(--ink-2);border-radius:5px;padding:2px 8px;flex:none}
+.read .t{font-size:14px;font-weight:700;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.read .w{font-size:12px;color:var(--ink-3);flex:none;max-width:36%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+
+.ab-hero{padding:60px 0 24px;text-align:center;max-width:600px;margin:0 auto}
+.ab-hero .eyebrow{font-size:12px;color:var(--accent);font-weight:700;letter-spacing:.12em;text-transform:uppercase}
+.ab-hero h1{font-size:34px;font-weight:800;margin:10px 0 8px;letter-spacing:-.02em}
+.ab-hero .sub{color:var(--ink-2);font-size:15px;margin-bottom:12px}
+.ab-hero .quote{font-size:15px;color:var(--ink-2);font-style:italic;margin:10px 0 20px;padding-left:14px;border-left:3px solid var(--accent);text-align:left}
+.ab-sec,.sec{padding:18px 0 6px}
+.sec h2{font-size:21px;font-weight:800;color:var(--ink);margin:28px 0 14px;letter-spacing:-.02em}
+.story-line{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;font-size:14px;background:var(--bg-soft);border:1px solid var(--line);border-radius:10px;padding:14px 18px;margin:14px 0}
+.story-line i{width:6px;height:6px;border-radius:50%;background:var(--accent);display:inline-block}
+.accs{display:flex;gap:12px;flex-wrap:wrap}
+.acc{min-width:150px;display:flex;flex-direction:column;gap:2px}
+.topics{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;margin:14px 0}
+.topics .it{background:#fff;border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:flex;gap:12px;align-items:flex-start;transition:.15s}
+.topics .it:hover{border-color:var(--ink);transform:translateY(-1px)}
+.topics .dot{width:10px;height:10px;border-radius:50%;flex:none;margin-top:5px}
+.topics .name{font-weight:700;font-size:14.5px;margin-bottom:2px}
+.topics .why{color:var(--ink-2);font-size:12.5px;line-height:1.55}
+
+
+footer{text-align:center;color:var(--ink-3);font-size:12.5px;padding:44px 0 56px;border-top:1px solid var(--line);margin-top:24px}
+footer .foot-nav{display:flex;gap:20px;justify-content:center;flex-wrap:wrap;margin-bottom:10px}
+footer .foot-nav a{color:var(--ink-2);font-weight:600;font-size:13px;padding-bottom:2px}
+footer .foot-nav a:hover{color:var(--accent)}
+
+@media(max-width:640px){
+  .hero h1{font-size:28px}
+  .grid{grid-template-columns:1fr}
+  nav a{padding:6px 8px;font-size:13px}
+  .wrap{padding:0 16px}
+  .post-body{padding:20px}
+  .read .w{display:none}
+}
+</style></head><body><header><div class="wrap"><a class="site-logo" href="index.html">秋秋很开心</a><nav><a href="index.html">首页</a><a href="topics.html">主题</a><a href="map.html">内容地图</a><a href="archive.html">全部文章</a><a href="search.html">搜索</a><a href="about.html" class="nav-hl">我是谁</a></nav></div></header><main class="wrap"><div class="ab-hero"><div class="eyebrow">认识秋秋 · QIUQUQU</div><h1>一个普通人的自由生活实验</h1><p class="sub">96年 · 24岁裸辞 · 26岁退休 · 带娃旅居中国</p><p class="quote">「我无法给出建议，我先给出经历。」</p><a class="btn" href="#story">从我的故事开始 ↓</a></div>
+  <section class="sec"><h2>我的轨迹</h2><div class="story-line">2018 开始写作 <i></i> 北漂编导 <i></i> 24岁裸辞 <i></i> 26岁退休 <i></i> 30岁旅居中国 <i></i> 2026 一起把人生过成实验</div><div class="accs"><div class="acc"><b>秋秋在分享</b><span>232 篇</span></div><div class="acc"><b>秋秋很开心</b><span>272 篇</span></div></div></section>
+  <section class="sec"><h2>我在长期研究这 6 件事</h2><div class="topics"><div class="it"><span class="dot" style="background:#c65d4b"></span><div><div class="name">财务自由</div><div class="why">不是为了躺平，而是为了拥有选择生活的自由</div></div></div><div class="it"><span class="dot" style="background:#7c5cff"></span><div><div class="name">生活方式</div><div class="why">普通家庭怎么过得舒服又体面，是我一直在试的事</div></div></div><div class="it"><span class="dot" style="background:#4f8f5f"></span><div><div class="name">自我成长</div><div class="why">把心理学用在解剖自己，记录真实的改变</div></div></div><div class="it"><span class="dot" style="background:#5b8db8"></span><div><div class="name">AI 与工具</div><div class="why">普通人的 AI 用法：让工具省时间，而不是炫技</div></div></div><div class="it"><span class="dot" style="background:#c2852f"></span><div><div class="name">读书</div><div class="why">读过的书，变成用得上的思考和方法</div></div></div><div class="it"><span class="dot" style="background:#c76f9e"></span><div><div class="name">好物分享</div><div class="why">认真用过、认真测评，才敢分享</div></div></div></div></section>
+  <section class="sec"><h2>我一路写了什么</h2><div class="chart"><div class="c"><div class="cv">6</div><div class="bar" style="height:6px"></div><div class="cy">2018</div></div><div class="c"><div class="cv">14</div><div class="bar" style="height:13px"></div><div class="cy">2019</div></div><div class="c"><div class="cv">67</div><div class="bar" style="height:62px"></div><div class="cy">2020</div></div><div class="c"><div class="cv">80</div><div class="bar" style="height:74px"></div><div class="cy">2021</div></div><div class="c"><div class="cv">66</div><div class="bar" style="height:61px"></div><div class="cy">2022</div></div><div class="c"><div class="cv">48</div><div class="bar" style="height:44px"></div><div class="cy">2023</div></div><div class="c"><div class="cv">57</div><div class="bar" style="height:53px"></div><div class="cy">2024</div></div><div class="c"><div class="cv">119</div><div class="bar" style="height:110px"></div><div class="cy">2025</div></div><div class="c"><div class="cv">47</div><div class="bar" style="height:43px"></div><div class="cy">2026</div></div></div><div class="tls"><div class="tl"><div class="ty">2018-2021</div><div class="tt">效率工具期</div><div class="td">写App、笔记、工具测评。</div></div><div class="tl"><div class="ty">2022</div><div class="tt">退休元年</div><div class="td">26岁带250万宣布退休。</div></div><div class="tl"><div class="ty">2023</div><div class="tt">FIRE体系化</div><div class="td">财富篇/心态篇/未来篇。</div></div><div class="tl"><div class="ty">2024-2025</div><div class="tt">全家FIRE</div><div class="td">生娃、家庭账本。</div></div><div class="tl"><div class="ty">2025-至今</div><div class="tt">旅居中国</div><div class="td">威海→海南→大理，骑行800km。</div></div></div></section>
+  <section class="sec"><h2>第一次认识我，从这 5 篇开始</h2><div class="reads"><a class="read" href="https://mp.weixin.qq.com/s/se7lRTlnpzbPMXOqDGWP1g" target="_blank" rel="noopener"><span class="no">01</span><span class="tag">认识我</span><span class="t">26岁，我打算正式退休了！</span><span class="w">普通人也能谈自由</span></a><a class="read" href="https://mp.weixin.qq.com/s/Eevz9jGj-JLerisrbKZ39A" target="_blank" rel="noopener"><span class="no">02</span><span class="tag">我的选择</span><span class="t">小城市45-60万真的足够Fire(退休)耶！</span><span class="w">便宜不等于将就</span></a><a class="read" href="https://mp.weixin.qq.com/s/xtRGUi5Gy5guFRsWXsE-w" target="_blank" rel="noopener"><span class="no">03</span><span class="tag">我的状态</span><span class="t">退休3个月，收入10万块。</span><span class="w">摊开现金流</span></a><a class="read" href="https://mp.weixin.qq.com/s/zAhsojID9jD2Z9LEQvrzA" target="_blank" rel="noopener"><span class="no">04</span><span class="tag">我的方法</span><span class="t">不上班三年，我是如何省钱/花钱的？</span><span class="w">错峰套利</span></a><a class="read" href="https://mp.weixin.qq.com/s/ZpNhg8KI6EhxX0iqyD8Eqg" target="_blank" rel="noopener"><span class="no">05</span><span class="tag">现在我做什么</span><span class="t">退休3年，我的资产翻倍了</span><span class="w">金钱/身体/能力</span></a></div></section>
+  <section class="sec"><h2>我反复谈论的词</h2><div class="cloud"><a class="word" style="font-size:24px" href="search.html?q=%E7%94%9F%E6%B4%BB%E6%96%B9%E5%BC%8F" title="400 篇">生活方式</a><a class="word" style="font-size:22px" href="search.html?q=%E8%87%AA%E6%88%91%E6%88%90%E9%95%BF" title="339 篇">自我成长</a><a class="word" style="font-size:22px" href="search.html?q=AI" title="331 篇">AI</a><a class="word" style="font-size:21px" href="search.html?q=%E6%8F%90%E5%89%8D%E9%80%80%E4%BC%91" title="294 篇">提前退休</a><a class="word" style="font-size:19px" href="search.html?q=%E8%AF%BB%E4%B9%A6" title="224 篇">读书</a><a class="word" style="font-size:18px" href="search.html?q=%E5%A5%BD%E7%89%A9" title="210 篇">好物</a><a class="word" style="font-size:18px" href="search.html?q=%E7%90%86%E8%B4%A2" title="185 篇">理财</a><a class="word" style="font-size:17px" href="search.html?q=%E6%90%9E%E9%92%B1" title="183 篇">搞钱</a><a class="word" style="font-size:17px" href="search.html?q=%E6%97%85%E8%A1%8C" title="180 篇">旅行</a><a class="word" style="font-size:17px" href="search.html?q=%E5%AD%98%E9%92%B1" title="158 篇">存钱</a><a class="word" style="font-size:16px" href="search.html?q=%E4%B9%A6%E5%8D%95%E6%8E%A8%E8%8D%90" title="141 篇">书单推荐</a><a class="word" style="font-size:16px" href="search.html?q=%E6%97%85%E8%A1%8C%E6%94%BB%E7%95%A5" title="133 篇">旅行攻略</a><a class="word" style="font-size:15px" href="search.html?q=%E6%83%85%E6%84%9F" title="111 篇">情感</a><a class="word" style="font-size:14px" href="search.html?q=%E5%A5%BD%E7%89%A9%E6%8E%A8%E8%8D%90" title="80 篇">好物推荐</a><a class="word" style="font-size:14px" href="search.html?q=%E6%96%B9%E6%B3%95%E6%95%99%E7%A8%8B" title="64 篇">方法教程</a><a class="word" style="font-size:13px" href="search.html?q=%E7%BB%8F%E9%AA%8C%E5%88%86%E4%BA%AB" title="49 篇">经验分享</a><a class="word" style="font-size:13px" href="search.html?q=%E7%90%86%E8%B4%A2%E5%88%86%E6%9E%90" title="27 篇">理财分析</a><a class="word" style="font-size:12px" href="search.html?q=%E4%B8%AA%E4%BA%BA%E5%A4%8D%E7%9B%98" title="13 篇">个人复盘</a><a class="word" style="font-size:12px" href="search.html?q=%E4%B8%AA%E4%BA%BA%E5%88%86%E4%BA%AB" title="4 篇">个人分享</a></div></section></main><footer><div class="foot-nav"><a href="about.html">认识秋秋</a><a href="map.html">内容地图</a><a href="archive.html">全部文章</a><a href="rss.xml">RSS 订阅</a></div><div class="foot-line">© 2026 秋秋很开心 · 秋秋在分享 · 全部内容为秋秋原创</div></footer></body></html>

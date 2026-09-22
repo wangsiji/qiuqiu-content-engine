@@ -39,7 +39,7 @@ python3 content/公众号/extract_articles.py   # 先出清单
 cd site && node build_all.mjs                 # 生成 docs/（GitHub Pages 根）
 ```
 
-build_all 依次跑：build3(首页/文章页) → build_about → make_topics(主题页) → build_extra(搜索/存档) → build_intel(内容地图/选题机会) → build_onboard → build_atoms → linkcheck → add_redirects。
+`build_all.mjs` 是单一构建入口，实际只调 `node build.mjs`（生成全站，共享 `site/theme.mjs` 模板）。旧的 `build3/build_about/make_topics/build_extra/build_intel/build_onboard/build_atoms/linkcheck/add_redirects` 已在 2026-09 重构时删除，勿再调用。
 
 ## 4. 语义检索（按意思找历史内容）
 
@@ -53,11 +53,10 @@ build_all 依次跑：build3(首页/文章页) → build_about → make_topics(�
 
 > 每次都 index 一次即可覆盖更新（幂等）。新入库文章后重跑 `index`，让向量库跟上；`.gitignore` 不入库，换机需重建。
 
-## 5. 内容地图 / 选题机会（自动分析 500+ 篇）
+## 5. 内容地图（自动分析 500+ 篇）
 
 - 内容地图页 `docs/map.html`：500+ 篇按 6 大主题 pillar 分布 + 交叉 + 代表文章
-- 选题机会页 `docs/opportunity.html`：自动给出 6 类选题（深耕/交叉空白/上升/沉寂回温/类型缺口/时间重写）
-- 均由 `site/build_intel.mjs` 从 `config/taxonomy.json` + 内容清单生成
+- 由 `site/build.mjs` 从 `config/taxonomy.json` + 内容清单生成（主题单一真相来自 taxonomy.json）
 
 ## 常用目录速记
 
