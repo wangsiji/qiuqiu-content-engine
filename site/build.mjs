@@ -45,7 +45,7 @@ const clean = articles
     title:        (a.title || '').trim(),
     date:         (a.date || '').slice(0,10),
     description:  (a.description || '').trim(),
-    tags:         (Array.isArray(a.tags) ? a.tags.map(t => String(t).trim().split('/').pop()).filter(Boolean) : []),
+    tags:         (() => { const t=(Array.isArray(a.tags)?a.tags:[]).map(x=>String(x).trim().split('/').pop()).filter(Boolean); return t.length ? t : (a.pillars||[]).map(x=>({freedom:'财务自由',lifestyle:'生活方式',growth:'自我成长',reading:'读书',ai:'AI 与工具',geek:'好物分享'})[x]).filter(Boolean); })(),
     source:       a.source || '',
     word_count:   Number(a.word_count) || 0,
     pillars:      Array.isArray(a.pillars) ? a.pillars : [],
@@ -74,7 +74,7 @@ const years = [...new Set(clean.map(a => a.date.slice(0,4)))].sort().reverse();
 /* ---------------- 卡片 & 页面 ---------------- */
 const card = (a, base = '') => {
   const href = a.source || (base + a._url.replace(/^\//, ''));
-  return `<a class="card" href="${href}" target="_blank" rel="noopener"><div class="card-meta"><time>${a.date}</time><span class="acct">${esc(a.account)}</span></div><h3>${esc(a.title)}</h3><p>${esc(a.description.slice(0,90))}</p><div class="tags">${a.tags.slice(0,3).map(t=>'<span>'+esc(t)+'</span>').join('')}</div></a>`;
+  return `<a class="card" href="${href}" target="_blank" rel="noopener"><h3>${esc(a.title)}</h3><div class="tags">${a.tags.slice(0,3).map(t=>'<span>'+esc(t)+'</span>').join('')}</div></a>`;
 };
 
 // 文章页
