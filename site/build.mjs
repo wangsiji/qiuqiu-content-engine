@@ -194,11 +194,11 @@ const topicStats = TOPICS.map(tp => {
   const recent = posts.filter(a => monthsAgo(a.date) <= 24).length;
   return { name: tp.name, count: posts.length, recent, latest: posts.length ? posts[0].date : null,
     avgWc: posts.length ? Math.round(posts.reduce((s,a)=>s+a.word_count,0)/posts.length) : 0,
-    topTitles: posts.slice(0,5).map(a=>a.title) };
+    topTitles: posts.slice(0,5).map(a=>({t:a.title, u: a.source||a._url.replace(/^\//,'')})) };
 });
 const maxN = Math.max(1, ...topicStats.map(t=>t.count));
 const bar = (n,max) => '<div class="bar"><i style="width:'+Math.round(n/(max||1)*100)+'%"></i></div>';
-const dashCards = topicStats.map(t => '<div class="tp"><h3>'+esc(t.name)+'</h3><div class="cnt">'+t.count+' 篇 · 最新 '+esc(t.latest)+'</div>'+bar(t.count,maxN)+'<div class="meta">均长 '+t.avgWc+' 字 · 近2年 '+t.recent+' 篇</div><details><summary>代表文章</summary>'+t.topTitles.map(x=>'<div class="tl">· '+esc(x)+'</div>').join('')+'</details></div>').join('');
+const dashCards = topicStats.map(t => '<div class="tp"><h3>'+esc(t.name)+'</h3><div class="cnt">'+t.count+' 篇 · 最新 '+esc(t.latest)+'</div>'+bar(t.count,maxN)+'<div class="meta">均长 '+t.avgWc+' 字 · 近2年 '+t.recent+' 篇</div><details><summary>代表文章</summary>'+t.topTitles.map(x=>'<div class="tl"><a href="'+x.u+'" target="_blank" rel="noopener">· '+esc(x.t)+'</a></div>').join('')+'</details></div>').join('');
 const pairs = [];
 for (let i = 0; i < TOPICS.length; i++) for (let j = i+1; j < TOPICS.length; j++) {
   const both = assigned.filter(a => a.topics.includes(TOPICS[i].name) && a.topics.includes(TOPICS[j].name));
