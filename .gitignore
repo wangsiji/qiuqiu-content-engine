@@ -6,6 +6,7 @@ __pycache__/
 
 # 公开仓库不进的内容
 content/公众号/.workbuddy/
-content/公众号/outputs/
+content/公众号/outputs/*
+!content/公众号/outputs/llm_cache.json
 content/公众号.zip
 豆包/
