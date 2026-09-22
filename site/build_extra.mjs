@@ -18,7 +18,7 @@ const clean = RAW
   .filter(a => a.title && a.source)
   .sort((a,b)=> a.date < b.date ? 1 : -1);
 const esc = s => String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
-const SITE = 'https://qqhkx2027.github.io/qiuqiu-content-engine';
+const SITE = 'https://wangsiji.github.io/qiuqiu-content-engine';
 const EXTRA_CSS = '.searchbar{display:flex;justify-content:center;gap:10px;margin:28px 0 6px;} .searchbar input{width:min(480px,100%);padding:12px 20px;border:1px solid #e7dcc4;border-radius:99px;font-size:15px;background:#fffdf9;outline:none;box-sizing:border-box;} .searchbar input:focus{border-color:#d2593a;} .searchbar button{background:#b8482c;color:#fff;border:none;border-radius:99px;padding:0 24px;font-size:15px;cursor:pointer;} .searchbar button:hover{opacity:.88;} .search-hint{font-size:13px;color:#9b9088;text-align:center;margin:12px 0 0;} ';
 const PAGES = ['index.html','topics.html','archive.html','about.html','404.html'];
 const POSTS = fs.readdirSync(path.join(OUT,'post')).filter(f=>f.endsWith('.html'));

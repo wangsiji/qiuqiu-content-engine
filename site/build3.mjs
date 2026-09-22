@@ -58,7 +58,7 @@ const slug = a => { const base = a.date.replace(/-/g, ''); const key = (a.filena
 const CSS = GHIBLI_CSS;
 const headerBar = (base = '') => `${GHIBLI_SKY}<header><div class="wrap"><a class="site-logo" href="${base}index.html">${SITE_NAME}</a><nav><a href="${base}about.html" class="nav-hl">我是谁</a><a href="${base}index.html">首页</a><a href="${base}topics.html">主题</a><a href="${base}map.html">内容地图</a><a href="${base}archive.html">全部文章</a><a href="${base}search.html">搜索</a></nav></div></header>`;
 const footer = () => '<footer><div class="foot-nav"><a href="about.html">认识秋秋</a><a href="map.html">内容地图</a><a href="archive.html">全部文章</a><a href="opportunity.html">我会继续写什么</a><a href="rss.xml">RSS 订阅</a></div><div class="foot-line">© 2026 秋秋很开心 · 秋秋在分享 · 全部内容为秋秋原创，卡片可跳转公众号原文</div></footer>';
-const page = (title, content, desc = '秋秋的个人网站，' + clean.length + ' 篇公众号历史文章存档', base = '', redirect = '') => `<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>${title}</title><meta name="description" content="${desc}"><meta property="og:title" content="${title}"><meta property="og:description" content="${desc}"><meta property="og:type" content="website"><meta property="og:site_name" content="秋秋很开心"><meta property="og:image" content="https://qqhkx2027.github.io/qiuqiu-content-engine/og-card.svg"><meta name="twitter:card" content="summary">${redirect ? '<meta http-equiv="refresh" content="0;url=' + redirect + '">' : ''}<style>${CSS}</style></head><body>${headerBar(base)}<main class="wrap">${content}</main>${footer()}</body></html>`;
+const page = (title, content, desc = '秋秋的个人网站，' + clean.length + ' 篇公众号历史文章存档', base = '', redirect = '') => `<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>${title}</title><meta name="description" content="${desc}"><meta property="og:title" content="${title}"><meta property="og:description" content="${desc}"><meta property="og:type" content="website"><meta property="og:site_name" content="秋秋很开心"><meta property="og:image" content="https://wangsiji.github.io/qiuqiu-content-engine/og-card.svg"><meta name="twitter:card" content="summary">${redirect ? '<meta http-equiv="refresh" content="0;url=' + redirect + '">' : ''}<style>${CSS}</style></head><body>${headerBar(base)}<main class="wrap">${content}</main>${footer()}</body></html>`;
 const hero = () => {
   const pillarSet = new Set(clean.flatMap(a => a.pillars || []));
   const typeSet = new Set(clean.map(a => a.content_type).filter(Boolean));
@@ -128,7 +128,7 @@ fs.writeFileSync(path.join(OUT, 'about.html'), page('关于 · ' + SITE_NAME, '<
 
 
 // SEO: sitemap / robots / RSS
-const baseUrl = 'https://qqhkx2027.github.io/qiuqiu-content-engine';
+const baseUrl = 'https://wangsiji.github.io/qiuqiu-content-engine';
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>${baseUrl}/</loc></url><url><loc>${baseUrl}/topics.html</loc></url><url><loc>${baseUrl}/map.html</loc></url><url><loc>${baseUrl}/opportunity.html</loc></url><url><loc>${baseUrl}/atoms.html</loc></url><url><loc>${baseUrl}/archive.html</loc></url><url><loc>${baseUrl}/about.html</loc></url>${clean.map(a => '<url><loc>' + baseUrl + a._url + '</loc></url>').join('')}</urlset>`;
 fs.writeFileSync(path.join(OUT, 'sitemap.xml'), sitemap);
 fs.writeFileSync(path.join(OUT, 'robots.txt'), 'User-agent: *\nAllow: /\nSitemap: ' + baseUrl + '/sitemap.xml\n');

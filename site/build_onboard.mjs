@@ -59,7 +59,7 @@ if (!oh.includes('还没写透')) {
 } else console.log('opportunity already');
 
 // 4) 全站 OG 统一：缺 og:image 的页面注入分享卡（与 build3 一致）
-const OG_META = '<meta property="og:site_name" content="秋秋很开心"><meta property="og:type" content="website"><meta property="og:image" content="https://qqhkx2027.github.io/qiuqiu-content-engine/og-card.svg"><meta name="twitter:card" content="summary">';
+const OG_META = '<meta property="og:site_name" content="秋秋很开心"><meta property="og:type" content="website"><meta property="og:image" content="https://wangsiji.github.io/qiuqiu-content-engine/og-card.svg"><meta name="twitter:card" content="summary">';
 for (const fn of fs.readdirSync(OUT)) {
   if (!fn.endsWith('.html')) continue;
   const p = path.join(OUT, fn);
