@@ -51,6 +51,8 @@ const clean = articles
     pillars:      Array.isArray(a.pillars) ? a.pillars : [],
     content_type: Array.isArray(a.content_type) ? a.content_type[0] || '' : (a.content_type || ''),
     content_full: a.content_full || a.content_preview || '',
+    // related 由 content_engine.py related 预计算（该文章的 BM25 近邻），这里只负责渲染
+    related:      Array.isArray(a.related) ? a.related : [],
   }))
   .sort((a, b) => (a.date < b.date ? 1 : -1));
 
@@ -81,11 +83,21 @@ const card = (a, base = '') => {
 fs.rmSync(path.join(OUT, 'post'), { recursive: true, force: true });
 fs.mkdirSync(path.join(OUT, 'post'), { recursive: true });
 for (const a of clean) a._url = slug(a);
+// related 里存的是磁盘绝对路径，按标题换回站内 post/ 链接
+const titleToUrl = new Map(clean.map(a => [a.title, a._url.replace(/^\//, '')]));
 for (const a of clean) {
   const srcFooter = a.source
     ? `<div class="post-footer"><a href="${esc(a.source)}" target="_blank" rel="noopener">在公众号阅读原文</a></div>`
     : '<div class="post-footer">本文为站内原创存档，无公众号原文链接</div>';
-  const body = `<article class="post"><a class="back" href="../index.html">← 返回首页</a><h1 class="post-title">${esc(a.title)}</h1><div class="post-meta"><time>${a.date}</time> · ${esc(a.account)} · ${a.word_count} 字 · 约${Math.max(1, Math.round(a.word_count/400))} 分钟阅读</div><p class="post-desc">${esc(a.description)}</p><div class="post-body">${renderMD(a.content_full)}</div>${srcFooter}</article>`;
+  // ⚠️ 文章页在 post/ 目录内，站内链接必须 ../ 回到上一层（slug 历史坑：带斜杠或漏 ../ 都会 404）
+  const relItems = a.related
+    .map(r => ({ u: titleToUrl.get(String(r.title || '').trim()), t: r.title }))
+    .filter(x => x.u)
+    .map(x => `<a class="rel" href="../${x.u}"><span>→</span>${esc(x.t)}</a>`);
+  const relatedHtml = relItems.length
+    ? `<nav class="related"><div class="rel-h">相关阅读</div>${relItems.join('')}</nav>`
+    : '';
+  const body = `<article class="post"><a class="back" href="../index.html">← 返回首页</a><h1 class="post-title">${esc(a.title)}</h1><div class="post-meta"><time>${a.date}</time> · ${esc(a.account)} · ${a.word_count} 字 · 约${Math.max(1, Math.round(a.word_count/400))} 分钟阅读</div><p class="post-desc">${esc(a.description)}</p><div class="post-body">${renderMD(a.content_full)}</div>${srcFooter}</article>${relatedHtml}`;
   fs.writeFileSync(path.join(OUT, a._url.replace(/^\//, '')), SHELL({ title: a.title + ' · ' + SITE, desc: a.description, base: '../', body }));
 }
 for (let i = 0; i < clean.length; i++) {

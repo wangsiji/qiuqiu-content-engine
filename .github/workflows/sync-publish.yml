@@ -37,6 +37,12 @@ jobs:
       - name: Extract article meta
         run: python content/公众号/extract_articles.py
 
+      - name: Build related-links index
+        run: |
+          python -m pip install --quiet -r requirements.txt
+          python content_engine.py index
+          python content_engine.py related -n 4
+
       - name: Build site
         run: |
           cd site
