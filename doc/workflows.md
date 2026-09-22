@@ -12,7 +12,7 @@
 node site/fetch_by_url.mjs "https://mp.weixin.qq.com/s/XXXXX"
 
 # 方式 C：本地服务器轮询（日常增量，全自动，无需操作）
-crontab: 5 1 * * * ~/bin/bridge_wechat.sh   # 每天凌晨 1 点拉一次 + 提交
+crontab: 0 6 * * * ~/bin/bridge_wechat.sh   # 每天凌晨 6 点抓一次 + 提交 + 重建向量库
 ```
 
 写好后：
