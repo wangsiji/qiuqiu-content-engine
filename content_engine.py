@@ -3,11 +3,11 @@
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import math
 import os
 import re
+from collections import Counter
 from pathlib import Path
 from urllib.parse import quote
 
@@ -33,22 +33,78 @@ def collection():
     )
 
 
-def vector(text: str, dimensions: int = 768):
-    """Small local Chinese-friendly hashed n-gram vector."""
+def _tokenize(text: str) -> list[str]:
+    """中文 bigram + 英数词。中文无空格，bigram 是零依赖的近似分词。"""
     text = re.sub(r"\s+", "", text.lower())
-    features = {}
-    for n in (1, 2, 3):
-        for i in range(max(0, len(text) - n + 1)):
-            gram = text[i : i + n]
-            if n == 1 and not re.search(r"[\u4e00-\u9fffA-Za-z0-9]", gram):
-                continue
-            key = int(hashlib.md5(gram.encode("utf-8")).hexdigest(), 16) % dimensions
-            features[key] = features.get(key, 0.0) + (1.0 if n == 2 else 0.5)
-    norm = math.sqrt(sum(v * v for v in features.values())) or 1.0
-    out = [0.0] * dimensions
-    for key, value in features.items():
-        out[key] = value / norm
+    out = []
+    for tok in re.findall(r"[\u4e00-\u9fff]+|[A-Za-z]+|\d+", text):
+        if len(tok) == 1 and not re.match(r"[A-Za-z0-9]", tok):
+            out.append(tok)
+        elif re.search(r"[\u4e00-\u9fff]", tok):
+            out += [tok[i : i + 2] for i in range(len(tok) - 1)] or [tok]
+        else:
+            out.append(tok)
     return out
+
+
+# ponytail: 先做标题命中加权，标题比正文更能代表主题；后续若需语义扩展再叠 LLM query expansion
+_TITLE_BOOST = 3.0
+
+
+def bm25_scores(query: str, corpus: dict[str, list[str]], **kw) -> list[tuple[str, float]]:
+    """corpus: {id: tokens}。返回 [(id, score)] 降序。纯 stdlib BM25。"""
+    n = len(corpus)
+    if not n:
+        return []
+    avgdl = sum(len(t) for t in corpus.values()) / n
+    df = Counter()
+    for toks in corpus.values():
+        df.update(set(toks))
+    idf = {w: math.log(1 + (n - c + 0.5) / (c + 0.5)) for w, c in df.items()}
+    q = _tokenize(query)
+    if not q:
+        return []
+    k1, b = 1.5, 0.75
+    out = []
+    for cid, toks in corpus.items():
+        tf = Counter(toks)
+        dl = len(toks) or 1
+        score = 0.0
+        for w in set(q):
+            c = tf.get(w, 0)
+            if not c:
+                continue
+            score += idf.get(w, 0.0) * (c * (k1 + 1)) / (c + k1 * (1 - b + b * dl / avgdl))
+        if score > 0:
+            out.append((cid, score))
+    out.sort(key=lambda x: -x[1])
+    return out
+
+
+def load_corpus() -> dict[str, dict]:
+    """从 chromadb 读出全部文档并构建 BM25 语料。缓存到内存避免每次重建。"""
+    global _CORPUS_CACHE
+    if _CORPUS_CACHE is not None:
+        return _CORPUS_CACHE
+    res = collection().get(include=["documents", "metadatas"])
+    docs = res.get("documents") or []
+    metas = res.get("metadatas") or []
+    ids = res.get("ids") or []
+    corpus = {}
+    for i, cid in enumerate(ids):
+        title = (metas[i] or {}).get("title") or ""
+        body = docs[i] or ""
+        corpus[cid] = {
+            "tokens": _tokenize(title) * int(_TITLE_BOOST) + _tokenize(body),
+            "title": title,
+            "meta": metas[i],
+            "text": body,
+        }
+    _CORPUS_CACHE = corpus
+    return corpus
+
+
+_CORPUS_CACHE = None
 
 
 def parse_note(path: Path):
@@ -123,13 +179,17 @@ def index():
         pass
     col = collection()
     if notes:
+        # BM25 检索不再用 embedding，但 chromadb 要求 embeddings 参数 → 传单位占位向量
+        # ponytail: chromadb 已退化为纯元数据存储，若后续嫌它重可直接换成 JSON 落盘
         col.upsert(
             ids=[n["path"] for n in notes],
             documents=[n["text"] for n in notes],
-            embeddings=[vector(n["text"]) for n in notes],
+            embeddings=[[0.0] * 8 for _ in notes],
             metadatas=[serialize_meta(n) for n in notes],
         )
-    print(f"已索引 {len(notes)} 篇文章，向量库：{DATA / 'chroma'}")
+    global _CORPUS_CACHE
+    _CORPUS_CACHE = None  # 索引变了要失效
+    print(f"已索引 {len(notes)} 篇文章（BM25 语料）：{DATA / 'chroma'}")
 
 
 def serialize_meta(n):
@@ -158,45 +218,52 @@ def load_derived_meta():
 
 
 def search(query: str, limit: int = 8, pillar: str | None = None, ctype: str | None = None):
-    # 拉多召回在内存过滤（避免 chromadb substring where 的限制）
-    pool = max(limit * 4, 20)
-    result = collection().query(query_embeddings=[vector(query)], n_results=pool)
-    docs = result.get("metadatas", [[]])[0]
-    distances = result.get("distances", [[]])[0]
-    rows = list(zip(docs, distances))
-    if pillar:
-        rows = [(m, d) for m, d in rows if pillar in (m.get("pillars") or "").split(",")]
-    if ctype:
-        rows = [(m, d) for m, d in rows if m.get("content_type") == ctype]
-    rows = rows[:limit]
-    if not rows:
-        print("没有找到匹配文章。请先运行 index，或放宽过滤条件。")
+    corpus = load_corpus()
+    if not corpus:
+        print("语料为空。请先运行：content_engine.py index")
         return []
-    for i, (meta, distance) in enumerate(rows, 1):
+    ranked = bm25_scores(query, {k: v["tokens"] for k, v in corpus.items()})
+    rows = []
+    for cid, score in ranked:
+        m = corpus[cid]["meta"]
+        if pillar and pillar not in (m.get("pillars") or "").split(","):
+            continue
+        if ctype and m.get("content_type") != ctype:
+            continue
+        rows.append((m, score))
+        if len(rows) >= limit:
+            break
+    if not rows:
+        print("没有找到匹配文章。请换更具体的关键词（BM25 按词频打分，太泛的词区分度低）。")
+        return []
+    for i, (meta, score) in enumerate(rows, 1):
         print(f"{i}. [{meta['title']}]({obsidian_link(meta['path'])})")
-        print(f"   {meta.get('published','')} · 距离 {distance:.3f} · pillars:{meta.get('pillars','')} · 类型:{meta.get('content_type','')}")
+        print(f"   {meta.get('published','')} · 相关度 {score:.1f} · pillars:{meta.get('pillars','')} · 类型:{meta.get('content_type','')}")
         if meta.get("description"):
             print(f"   {meta['description']}")
     return [m for m, _ in rows]
 
 
 def suggest(topic: str, limit: int = 5):
+    """基于真实检索结果给选题参考。排期这种每周固定的事交给 cron/人，不在这里编。"""
     print(f"# 秋秋选题助手：{topic}\n")
-    docs = collection().query(query_embeddings=[vector(topic)], n_results=limit).get("metadatas", [[]])[0]
-    print("## 历史内容参考\n")
-    for meta in docs:
-        print(f"- [{meta['title']}]({obsidian_link(meta['path'])})：{meta.get('description','')}")
-    print("\n## 新选题方向\n")
-    print(f"- 公众号文章：{topic}｜普通人实测、具体数字与可执行方法")
-    print(f"- 竖版视频：3 个关于“{topic}”的结果/误区，前 3 秒先给结论")
-    print(f"- 横版视频：完整拆解“{topic}”，加入过程、案例和复盘")
-    print("\n## 建议排期\n")
-    print("- 周一：确定选题与资料，完成公众号文章提纲")
-    print("- 周二：完成公众号文章初稿")
-    print("- 周三：拍摄并剪辑 1 条竖版视频")
-    print("- 周四：发布公众号文章")
-    print("- 周五：剪辑横版视频并发布视频号/B 站")
-    print("- 周末：复盘数据，记录可继续发展的子选题")
+    corpus = load_corpus()
+    ranked = bm25_scores(topic, {k: v["tokens"] for k, v in corpus.items()})[:limit]
+    if not ranked:
+        print("没找到可参考的历史文章，换个更具体的说法试试。\n")
+        return
+    print("## 历史可参考（越靠前越相关）\n")
+    for cid, score in ranked:
+        m = corpus[cid]["meta"]
+        desc = (m.get("description") or "").strip()
+        print(f"- [{m['title']}]({obsidian_link(m['path'])}) — 相关度 {score:.1f}")
+        print(f"  {m.get('published','')} · {m.get('pillars','')} · {m.get('content_type','')}")
+        if desc:
+            print(f"  {desc[:120]}")
+    print("\n## 写之前先确认\n")
+    print("1. 上面最相关的 1-2 篇，这次的**新角度**是什么？（不能是同样的经历重讲）")
+    print("2. 有没有可落到纸上的**具体数字**？（存款额、月支出、天数、价格）")
+    print("3. 这次要给读者的**一句话结论**是什么？")
 
 
 def catalog():
