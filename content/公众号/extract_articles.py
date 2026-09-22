@@ -9,11 +9,32 @@ import os
 import re
 import json
 import glob
+import hashlib
+import sys
+import urllib.request
+import urllib.error
 from datetime import datetime
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.abspath(os.path.join(BASE_DIR, "..", ".."))
 TAXONOMY_PATH = os.path.join(ROOT, "config", "taxonomy.json")
+LLM_CACHE_PATH = os.path.join(BASE_DIR, "outputs", "llm_cache.json")
+LLM_ENABLED = os.environ.get("QIUQIU_LLM", "1") != "0"
+LLM_URL = "https://chatapi.weixin.qq.com/openai/v1/chat/completions"
+LLM_MODEL = os.environ.get("QIUQIU_LLM_MODEL", "Deepseek-v4-flash")
+LLM_DELAY = float(os.environ.get("QIUQIU_LLM_DELAY", "1.2"))  # 请求间最小间隔, 网关 429 限流
+import time as _t
+
+_llm_last_call = 0.0
+
+
+def _llm_pace():
+    """限速两次 LLM 请求间隔，避免网关 429。"""
+    global _llm_last_call
+    now = _t.time()
+    if now - _llm_last_call < LLM_DELAY:
+        _t.sleep(LLM_DELAY - (now - _llm_last_call))
+    _llm_last_call = _t.time()
 
 
 def load_taxonomy():
@@ -21,6 +42,101 @@ def load_taxonomy():
     with open(TAXONOMY_PATH, "r", encoding="utf-8") as f:
         tax = json.load(f)
     return tax.get("pillars", []), tax.get("content_types", [])
+
+
+# --------------------------- LLM 语义打标 ---------------------------
+# ponytail: 单进程 dict 缓存 + json, 够用; 需并发再换 sqlite.
+
+def _llm_token():
+    """读 CODING_PLAN_TOKEN（weixin 网关 key）。"""
+    for path in (os.path.expanduser("~/.hermes/.env"),):
+        try:
+            for line in open(path):
+                if line.startswith("CODING_PLAN_TOKEN="):
+                    return line.split("=", 1)[1].strip().strip('"').strip("'")
+        except OSError:
+            pass
+    return os.environ.get("CODING_PLAN_TOKEN", "")
+
+
+def _taxonomy_desc(items, with_aliases):
+    parts = []
+    for it in items:
+        s = it["id"] + "(" + it["name"]
+        if it.get("why"):
+            s += ":" + it["why"]
+        if with_aliases and it.get("aliases"):
+            s += "; 相关词:" + "/".join(it["aliases"][:6])
+        parts.append(s + ")")
+    return "; ".join(parts)
+
+
+def _llm_classify(pillars, content_types, title, body, cache=None):
+    """调 LLM 对单篇分类, 结果缓存于 cache(dict)。成功返回 (pillars_hit,types_hit)。
+    任何异常/解析失败返回 None, 由调用方回退到 alias。"""
+    if cache is None:
+        cache = {}
+    key = hashlib.sha1((title + "\n" + body[:300]).encode("utf-8")).hexdigest()
+    if key in cache:
+        return cache[key]
+    valid_p = {p["id"] for p in pillars}
+    valid_t = {t["id"] for t in content_types}
+    prompt = (
+        "你是中文公众号文章内容分类器，只依据正文判断主题，千万不要因为正文提到某些类别词就套标签。\n"
+        "可选支柱 pillar（最多3个，按贴切度）:\n" + _taxonomy_desc(pillars, True) + "\n"
+        "可选内容类型 content_type（单选最贴切）:\n" + _taxonomy_desc(content_types, False) + "\n\n"
+        "标题: " + title + "\n正文开头: " + body[:500] + "\n\n"
+        '只输出一行 JSON: {"pillars":["id"...],"content_type":"id"}'
+    )
+    try:
+        for attempt in range(1, 5):
+            _llm_pace()
+            try:
+                req = urllib.request.Request(
+                    LLM_URL,
+                    data=json.dumps({
+                        "model": LLM_MODEL,
+                        "messages": [{"role": "user", "content": prompt}],
+                        "max_tokens": 100, "temperature": 0,
+                    }).encode(),
+                    headers={"Authorization": "Bearer " + _llm_token(), "Content-Type": "application/json"},
+                )
+                resp = json.loads(urllib.request.urlopen(req, timeout=60).read())
+                break
+            except urllib.error.HTTPError as e:
+                if e.code == 429 and attempt < 4:
+                    pause = 2 ** attempt * 2  # 4,8,16s
+                    print("    [llm 429] " + title[:16] + " 等待 " + str(pause) + "s", file=sys.stderr)
+                    _t.sleep(pause)
+                    continue
+                raise
+        else:
+            return None
+        m = re.search(r"\{.*\}", resp["choices"][0]["message"]["content"], re.DOTALL)
+        if not m:
+            return None
+        data = json.loads(m.group(0))
+        ph = [p for p in data.get("pillars", []) if p in valid_p]
+        th = [t for t in (data.get("content_type"),) if t in valid_t]
+        result = (ph, th)
+        if ph:
+            cache[key] = result
+        return result
+    except Exception as e:
+        print("    [llm降级] " + title[:20] + ": " + str(e), file=sys.stderr)
+        return None
+
+
+def classify_article(pillars, content_types, title, description, tags, body, cache=None):
+    """打标: LLM 优先(成功且非空则用), 否则回退 alias 子串。cache 跨调用复用, 供运行时全局缓存。"""
+    if cache is None:
+        cache = {}
+    if LLM_ENABLED:
+        res = _llm_classify(pillars, content_types, title, body, cache)
+        if res and res[0]:
+            return res
+    haystack = " ".join([title, description, " ".join(map(str, tags)), body[:400]])
+    return classify_by_alias(pillars, haystack), classify_by_alias(content_types, haystack)
 
 
 def classify_by_alias(items, haystack):
@@ -89,8 +205,8 @@ def extract_date_from_filename(filename):
     return None
 
 
-def process_file(filepath, account_name, pillars, content_types):
-    """处理单篇文章。"""
+def process_file(filepath, account_name, pillars, content_types, cache=None):
+    """处理单篇文章。cache: 传给 classify 的 LLM 结果缓存 dict, 缺省空(不缓存)。"""
     filename = os.path.basename(filepath)
     try:
         with open(filepath, "r", encoding="utf-8") as f:
@@ -110,11 +226,9 @@ def process_file(filepath, account_name, pillars, content_types):
     tags = meta.get("tags", [])
     source = meta.get("source", "")
 
-    # 用 taxonomy 别名自动打标（不改原文件）
-    # haystack = 标题 + 描述 + tags + 正文前400字（保证无 tags 的手动抓取文章也能识别主题）
-    haystack = " ".join([title, description, " ".join(map(str, tags)), clean_text[:400]])
-    pillars_hit = classify_by_alias(pillars, haystack)
-    types_hit = classify_by_alias(content_types, haystack)
+    # 用 taxonomy 打标（v3: LLM 语义优先，alias 回退，不改原文件）
+    pillars_hit, types_hit = classify_article(
+        pillars, content_types, title, description, tags, clean_text, cache)
 
     return {
         "id": f"qq-{date.replace('-', '') if date else 'nodate'}-{filename.split('-')[-1].replace('.md', '')}",
@@ -139,15 +253,25 @@ def main():
     type_name = {t["id"]: t["name"] for t in content_types}
 
     all_articles = []
+    cache = {}
+    if os.path.exists(LLM_CACHE_PATH):
+        try:
+            with open(LLM_CACHE_PATH, "r", encoding="utf-8") as f:
+                cache = json.load(f)
+        except (OSError, ValueError):
+            cache = {}
     for folder in ["《秋秋很开心》", "《秋秋在分享》"]:
         folder_path = os.path.join(BASE_DIR, folder)
         account_name = folder.strip("《》")
         files = glob.glob(os.path.join(folder_path, "*.md"))
         print(f"处理 {account_name}: {len(files)} 篇")
         for fp in sorted(files):
-            article = process_file(fp, account_name, pillars, content_types)
+            article = process_file(fp, account_name, pillars, content_types, cache)
             if article:
                 all_articles.append(article)
+    if LLM_ENABLED and cache:
+        with open(LLM_CACHE_PATH, "w", encoding="utf-8") as f:
+            json.dump(cache, f, ensure_ascii=False, indent=1)
 
     # 按日期排序
     all_articles.sort(key=lambda x: x.get("date") or "0000-00-00")
