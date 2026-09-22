@@ -12,7 +12,7 @@
 node site/fetch_by_url.mjs "https://mp.weixin.qq.com/s/XXXXX"
 
 # 方式 C：本地服务器轮询（日常增量，全自动，无需操作）
-crontab: 0 */6 * * * ~/bin/bridge_wechat.sh   # 每 6 小时拉一次 + 提交
+crontab: 5 1 * * * ~/bin/bridge_wechat.sh   # 每天凌晨 1 点拉一次 + 提交
 ```
 
 写好后：
@@ -51,10 +51,12 @@ build_all 依次跑：build3(首页/文章页) → build_about → make_topics(�
 
 无 `.venv`：`python3 -m venv .venv && .venv/bin/pip install -r requirements.txt`
 
-## 5. 内容地图 / 选题机会（自动分析 502 篇）
+> 每次都 index 一次即可覆盖更新（幂等）。新入库文章后重跑 `index`，让向量库跟上；`.gitignore` 不入库，换机需重建。
 
-- 内容地图页 `docs/map.html`：502 篇按 6 大主题 pillar 分布 + 交叉 + 代表文章
-- 选题机会页 `docs/opportunity.html`：自动给出 4 类选题（深耕/交叉空档/沉寂重启/上升）
+## 5. 内容地图 / 选题机会（自动分析 500+ 篇）
+
+- 内容地图页 `docs/map.html`：500+ 篇按 6 大主题 pillar 分布 + 交叉 + 代表文章
+- 选题机会页 `docs/opportunity.html`：自动给出 6 类选题（深耕/交叉空白/上升/沉寂回温/类型缺口/时间重写）
 - 均由 `site/build_intel.mjs` 从 `config/taxonomy.json` + 内容清单生成
 
 ## 常用目录速记

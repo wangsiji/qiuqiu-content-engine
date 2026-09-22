@@ -3,13 +3,9 @@ data/
 __pycache__/
 *.pyc
 *.DS_Store
-web/node_modules/
 
 # 公开仓库不进的内容
 content/公众号/.workbuddy/
 content/公众号/outputs/
 content/公众号.zip
 豆包/
-
-content/公众号/articles_data.json
-web/

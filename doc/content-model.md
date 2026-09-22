@@ -58,10 +58,10 @@ tags: ["秋秋/想办法", "秋秋/搞钱", ...]
 
 `extract_articles.py` 每次运行：
 
-- `content/公众号/outputs/articles_data.json` — 全量内容清单（502 篇，每篇含上表所有字段 + `content_full` 正文）。供站点 build 与语义索引读取。
+- `content/公众号/outputs/articles_data.json` — 全量内容清单（500+ 篇，每篇含上表所有字段 + `content_full` 正文）。供站点 build 与语义索引读取。
 
 ## 关键克制
 
 - 它是一段「内容资产」，不是「文章」。语义检索（Chroma `content_engine.py`）与未来内容生产都以此清单为底。
-- **绝不做**：全量手写 id / relations / performance —— 502 篇人肉填充不可行、不可维护。id 由 extract 自动生成，关系留给后续选做。
+- **绝不做**：全量手写 id / relations / performance —— 500+ 篇人肉填充不可行、不可维护。id 由 extract 自动生成，关系留给后续选做。
 - **不改原文件**：打标、索引、检索全部「读时推导」，单源、可重复、无污染。

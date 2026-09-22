@@ -2,7 +2,7 @@
 
 秋秋很开心 / 秋秋在分享 · 公众号历史文章的内容资产与个人网站。
 
-**线上地址**：https://qqhkx2027.github.io/qiuqiu-content-engine/（GitHub Pages 自动部署）
+**线上地址**：https://wangsiji.github.io/qiuqiu-content-engine/（GitHub Pages 自动部署）
 
 ---
 
@@ -11,7 +11,7 @@
 ```
 qiuqiu-content-engine/
 ├── content/
-│   ├── 公众号/                 # Markdown 文章库（事实真相源，502 篇）
+│   ├── 公众号/                 # Markdown 文章库（事实真相源，500+ 篇）
 │   │   ├── 《秋秋很开心》/      # 2026 新号：学习 / 成长 / 好物
 │   │   ├── 《秋秋在分享》/      # 历史号：财务自由 / 投资 / 旅居
 │   │   ├── extract_articles.py # 抽取元数据 + 按 taxonomy 自动打标
@@ -35,7 +35,7 @@ qiuqiu-content-engine/
 
 ## 内容资产层（Content Engine 的核心）
 
-把 `content/公众号/` 的 502 篇 md 理解成**可检索、可归类的「内容资产库」**，而非一堆文件。三种视角：
+把 `content/公众号/` 的 500+ 篇 md 理解成**可检索、可归类的「内容资产库」**，而非一堆文件。三种视角：
 
 - **资产类型**：`config/taxonomy.json` 定义「6 大支柱 pillar + 8 种内容类型」，每篇有别名表。
 - **自动打标**：`extract_articles.py` 读取 taxonomy，在标题+描述+标签+正文开头里用别名匹配，自动给出每篇的 `pillars`（内容支柱）和 `content_type`（内容类型）——不改原文件，实时推导。
@@ -85,7 +85,7 @@ cd site && node build_all.mjs                # 构建到 docs/（可在任意目
 
 ## 本地语义检索（内容资产的查询层）
 
-`content_engine.py` 用 Chroma 给 502 篇建语义向量索引，做**按意思搜**而非按关键词搜。这是内容资产库的「查询口语」：想找 FIRE + 经验 + 旅居，直接描述意图即可。
+`content_engine.py` 用 Chroma 给 500+ 篇建语义向量索引，做**按意思搜**而非按关键词搜。这是内容资产库的「查询口语」：想找 FIRE + 经验 + 旅居，直接描述意图即可。
 
 ```bash
 .venv/bin/python content_engine.py index                    # 建（或更新）索引
