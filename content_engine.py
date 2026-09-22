@@ -120,12 +120,21 @@ def parse_note(path: Path):
             except yaml.YAMLError:
                 meta = _fallback_meta(raw_meta)
             body = text[end + 5 :]
-    title = str(meta.get("name") or _h1(body) or path.stem)
+    # 新旧 frontmatter 字段名不统一：旧文 name/published，fetch_wemp 抓的新文 title/date
+    title = str(meta.get("name") or meta.get("title") or _h1(body) or path.stem)
+    # 兜底：连 title 都没有时，从文件名剥掉 YYYYMMDD- 前缀当标题
+    if title == path.stem:
+        title = re.sub(r"^\d{8}-", "", path.stem)
     description = str(meta.get("description") or "")
     tags = meta.get("tags") or []
     if isinstance(tags, str):
         tags = [tags]
-    published = str(meta.get("published") or "")
+    published = str(meta.get("published") or meta.get("date") or "")
+    # 兜底：文件名前 8 位就是发布日（YYYYMMDD）
+    if not published:
+        m = re.match(r"^(\d{4})(\d{2})(\d{2})", path.stem)
+        if m:
+            published = f"{m.group(1)}-{m.group(2)}-{m.group(3)}"
     searchable = "\n".join([title, description, " ".join(map(str, tags)), body])
     return {
         "title": title,
@@ -294,24 +303,78 @@ def catalog():
     print("\n提示：search 支持 --pillar 与 --type 过滤某个组合的内容，便于找材料复用。")
 
 
+_NUM = re.compile(r"\d+(?:\.\d+)?\s*(?:万|块|元|年|个月|天|小时|分钟|%|％|公里|斤|件|次|篇|岁|倍)")
+
+
+def extract_numbers(text: str, limit: int = 6) -> list[str]:
+    """从正文里揪出带单位的真实数字——写成初稿时能直接引用的素材。"""
+    out = []
+    for m in _NUM.finditer(text or ""):
+        frag = m.group(0).strip()
+        if frag not in out:
+            out.append(frag)
+        if len(out) >= limit:
+            break
+    return out
+
+
+def brief(topic: str, limit: int = 5):
+    """写前提纲：把检索到的素材整理成可直接动笔的角度+数字，不写正文。
+
+    与 suggest 的区别：suggest 回答'写过什么'，brief 回答'这次怎么写'。
+    """
+    corpus = load_corpus()
+    ranked = bm25_scores(topic, {k: v["tokens"] for k, v in corpus.items()})[: limit * 3]
+    if not ranked:
+        print(f"没有找到与「{topic}」相关的历史文章。换个更具体的说法试试。")
+        return
+    print(f"# 写前提纲：{topic}\n")
+    print("## 一、手上已有的素材（避免重复 / 可以直接引用）\n")
+    nums_all = []
+    for cid, score in ranked[:limit]:
+        m = corpus[cid]["meta"]
+        nums = extract_numbers(corpus[cid]["text"])
+        nums_all.extend(nums)
+        print(f"- **{m['title']}**（{m.get('published','')}，相关度 {score:.1f}）")
+        print(f"  {obsidian_link(m['path'])}")
+        print(f"  {m.get('pillars','')} · {m.get('content_type','')}")
+        if nums:
+            print(f"  真实数字：{'、'.join(nums)}")
+    print("\n## 二、这次必须回答的三个问题\n")
+    print("1. **重复检查**：上面最相关的一两篇已经写了什么？这次的**增量**是什么？")
+    print("2. **一句话结论**：读者看完能带走的那一句是什么？（写不出来就别动笔）")
+    print("3. **数字从哪来**：能用上的真实数字有几个？（上面的列表可直接取，但必须是真实发生过的）")
+    if nums_all:
+        print(f"\n   素材池里的数字候选：{'、'.join(nums_all[:12])}")
+    print("\n## 三、结构建议\n")
+    print("- 开头：抛结论或物件（参考语料里「大家好，我是秋秋呀～」或直接给数字）")
+    print("- 中段：按场景分节，不按教科书分类。概念类可用 1/2/3 编号，叙事类自然流动")
+    print("- 收尾：总结框 → 星标签名 → 转发指令")
+    print(f"\n> 写完后自查：标题 {15.7:.0f} 字左右、句长中位 28 字、每段约 0.5 个数字（详见 writing-rules.md）")
+
+
 def main():
     parser = argparse.ArgumentParser(description="qiuqiu-content-engine")
     sub = parser.add_subparsers(dest="command", required=True)
-    sub.add_parser("index", help="建立或更新本地向量索引")
+    sub.add_parser("index", help="建立或更新本地 BM25 索引")
     sub.add_parser("catalog", help="盘点内容资产（按支柱/类型统计存量）")
-    s = sub.add_parser("search", help="搜索历史公众号文章")
+    s = sub.add_parser("search", help="搜索历史公众号文章（BM25 按词频打分）")
     s.add_argument("query")
     s.add_argument("-n", "--limit", type=int, default=8)
     s.add_argument("--pillar", "--p", help="按内容支柱过滤，如 freedom/lifestyle/growth/reading/ai/geek")
     s.add_argument("--type", "--t", help="按内容类型过滤，如 knowledge/experience/story/opinion/tutorial/review/list/reflection")
-    a = sub.add_parser("suggest", help="根据历史内容生成选题与排期建议")
+    a = sub.add_parser("suggest", help="查看某主题写过什么（历史参考 + 写前三问）")
     a.add_argument("topic")
     a.add_argument("-n", "--limit", type=int, default=5)
+    b = sub.add_parser("brief", help="写前提纲：整理可用素材/真实数字，输出可执行角度")
+    b.add_argument("topic")
+    b.add_argument("-n", "--limit", type=int, default=5)
     args = parser.parse_args()
     {"index": index,
      "catalog": catalog,
      "search": lambda: search(args.query, args.limit, args.pillar, args.type),
-     "suggest": lambda: suggest(args.topic, args.limit)}[args.command]()
+     "suggest": lambda: suggest(args.topic, args.limit),
+     "brief": lambda: brief(args.topic, args.limit)}[args.command]()
 
 
 if __name__ == "__main__":
