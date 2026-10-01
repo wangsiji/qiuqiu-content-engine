@@ -28,7 +28,7 @@ import argparse
 
 API_BASE = "https://down.mptext.top/api/public/v1/download"
 OUT_DIR = os.path.expanduser(
-    "~/projects/wsj-second-brain/00-LLM-WiKi/Outputs/秋秋很开心初稿"
+    "~/Obsidian/wsj-second-brain/00-LLM-WiKi/Outputs/秋秋很开心初稿"
 )
 
 def fetch(url: str, fmt: str) -> str:
