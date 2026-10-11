@@ -75,6 +75,8 @@ function collect(dir, set) {
     if (f.isDirectory()) collect(p, set);
     else if (f.name.endsWith('.md')) {
       const t = fs.readFileSync(p, 'utf8');
+      // 正文为空的占位文件不算"已知"——上游补上正文后要能重新入库补写正文
+      if (/^<!--\s*PENDING_BODY\s*-->$/m.test(t)) return;
       const m = t.match(/^source:\s*(.+)$/m);
       if (m) set.add(m[1].trim());
     }
@@ -116,18 +118,18 @@ const unixToDate = (sec) => {
     const detail = await getJson(ORIGIN + '/api/v1/wx/articles/' + it.id + '?content=true', token);
     const html = detail.data?.content || '';
     const bodyMd = htmlToMd(html);
-    if (!bodyMd) { console.log('跳过(无正文):', link); continue; }
 
-    // 4. 写 md
+    // 4. 写 md（无正文时写占位文件，不丢文章；上游补正文后会被重新入库覆盖）
     const folder = folderOf(it.mp_id, it.mp_name);
     const dir = path.join(CONTENT, folder);
     fs.mkdirSync(dir, { recursive: true });
     const fname = date.replace(/-/g, '') + '-' + title.replace(/[\\/:*?"<>|]/g, '').slice(0, 80) + '.md';
-    const md = '---\ntitle: "' + title.replace(/"/g, '\\"') + '"\nsource: ' + link + '\ndate: ' + date + '\n---\n\n' + bodyMd;
+    const body = bodyMd || '<!-- PENDING_BODY -->\n\n> 正文尚未抓取到，可在微信原文查看。\n\n[阅读原文](' + link + ')';
+    const md = '---\ntitle: "' + title.replace(/"/g, '\\"') + '"\nsource: ' + link + '\ndate: ' + date + '\n---\n\n' + body;
     fs.writeFileSync(path.join(dir, fname), md);
     known.add(link);
     added++;
-    console.log('入库:', folder + '/' + fname);
+    console.log(bodyMd ? '入库:' : '入库(无正文占位):', folder + '/' + fname);
   }
   console.log('done. added =', added);
 })().catch(e => { console.error('失败:', e.message); process.exit(1); });
